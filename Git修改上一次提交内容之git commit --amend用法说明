@@ -1,0 +1,42 @@
+命令：git commit --amend
+
+使用方法：
+
+    // 第一次修改代码
+
+    git add .
+
+    git comint
+
+    repo upload（git push 也可以）
+
+    // 发现刚commit的代码有问题，进行修改
+
+    git add .
+
+    git commit --amend
+
+    repo upload（git push 也可以）
+
+这样上传后会在原有的gerrit链接上追加一个patch，而不会产生一个新的gerrit链接，效果如下，一个gerrit链接中有 Patch set 1 和 Patch set 2 （下图中2处）
+
+    
+
+实例解析：
+
+1. 第一次使用git commit 提交时，commit message 如下。  （这里默认的模板可以修改用户根目录下的.gitmsg，检查是否按照要求填写的规则脚本在 ./.repo/repo/hooks/commit-msg ）  
+
+    
+2. 提交后 git log 信息如下，细心的同学应该已经发现，第一行的commit其实就是Gerrit链接中 Patch set 1 的ID，而Change-Id则是Gerrit截图中红框1位置的Change-Id。
+
+    
+3. 使用repo upload 或者 git push 提交代码后，发现还有地方需要修改，再次修改后，使用 git commit --amend 提交，commit message如下，比第一次提交多了一个 Change-Id，请确保change-id是最后一行有效注释。
+    
+4. 再次查看git log，会发现只有一条commit记录，第一行的commit已经变成了gerrit截图中patch set 2的ID，而Change-Id则没有变化。Gerrit就是通过这里的Change-Id来识别是否同一个修改内容。
+
+    
+Q&A：
+
+Q1：为什么我使用 git commit --amend 提交的时候，commit message 中没有Change-Id？
+
+A1：Change-Id 是在 ./.repo/repo/hooks/commit-msg 文件中控制添加的。该文件还有一个用途，是检查 commit message 是否填写正确，如果没有按照规定的模板填写，commit会失败。有的同学为了git commit的时候可以更方便，会删除或修改此文件，可能导致添加 Change-Id 的操作异常。
